@@ -9,6 +9,9 @@ Vaadin implemented and setup, but not used.
 
 Use every source. You can also remove the annotations and implementations of data, security and Vaadin, leading to an more lightweight still compileable application.
 
+In IntelliJ import via VCS (version control).
+After importing add Framwork support for following frameworks:
+
 Sources:
 Spring IO Framework
   -boot
@@ -18,7 +21,10 @@ Spring IO Framework
   -session
 
 Maven
-Vaadin ( not necessary )
+Vaadin ( optional )
+
+
+Following third party code was used:
 
 Sockjs
 jquery
