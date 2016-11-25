@@ -1,40 +1,41 @@
 package com.stomp;
 
 
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.*;
-
-
-import org.springframework.security.core.userdetails.UserDetailsService;
-
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Override
-    protected void configure(HttpSecurity http) throws Exception{
+   /* @Override
+    protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                    .antMatchers( "/home", "/index").permitAll()
-                    .anyRequest().authenticated()
-                    .and()
+                .antMatchers("/", "/home").permitAll()
+                .anyRequest().authenticated()
+                .and()
                 .formLogin()
-                    .loginPage("/login")
-                    .permitAll()
-                    .and()
+                .loginPage("/login")
+                .permitAll()
+                .and()
                 .logout()
-                    .permitAll();
+                .permitAll();
     }
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception{
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
-
                 .inMemoryAuthentication()
-                   .withUser("user").password("password").roles("USER");
-    }
+                .withUser("user").password("password").roles("USER");
+    } */
+
+   @Override
+   protected void configure(HttpSecurity http) throws Exception{
+       http.authorizeRequests().anyRequest().permitAll();
+   }
 }

@@ -41,6 +41,10 @@ function sendName() {
 
 }
 
+function showGreeting(message){
+    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+}
+
 $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
@@ -53,6 +57,3 @@ $(function () {
 
 
 
-function showGreeting(message){
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
-}
