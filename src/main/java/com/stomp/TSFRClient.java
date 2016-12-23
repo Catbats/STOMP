@@ -23,16 +23,21 @@ public class TSFRClient {
     public static void main(String[] args) {
         Socket clientSocket;
         try {
+            //initialize
             DatagramSocket toSocket = new DatagramSocket();
             clientSocket = new Socket ("localhost", 4000);
             BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             PrintStream output = new PrintStream(clientSocket.getOutputStream());
-
             Scanner scanner = new Scanner(System.in);
+
+            //Connection information
             System.out.println("EchoClient runs on " + clientSocket.getInetAddress().getHostAddress()
                     + ":" + clientSocket.getLocalPort() + " - type 'quit' to stop.");
+
+            //Authentication
             System.out.println("Username wählen :");
             String username = scanner.nextLine();
+
 
             byte[] data = username.getBytes();
             int port = 4711;
