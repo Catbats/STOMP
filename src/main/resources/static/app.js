@@ -15,7 +15,7 @@ function setConnected(connected){
     $("#greetings").html("");
 }
 
-function connect() {
+function connectGreeting() {
     var socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
@@ -49,7 +49,7 @@ $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
-    $( "#connect" ).click(function (){connect();});
+    $( "#connect" ).click(function (){connectGreeting();});
     $( "#disconnect" ).click(function () {disconnect();});
     $( "#send" ).click(function() {sendName();});
 
