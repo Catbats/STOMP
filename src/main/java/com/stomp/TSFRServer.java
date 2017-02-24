@@ -5,12 +5,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-
+import java.util.ArrayList;
 
 
 public class TSFRServer {
+    public static ArrayList connections = new ArrayList();
     public static void main(String[] args) {
-        ServerSocket listen;
+         ServerSocket listen;
         try {
             listen = new ServerSocket(4000);
             try {

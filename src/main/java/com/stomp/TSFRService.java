@@ -1,12 +1,13 @@
 package com.stomp;
 
+import com.vaadin.shared.ui.Connect;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Socket;
+import java.net.*;
+import java.util.HashMap;
 
 class TSFRService extends Thread {
     private final Socket serviceSocket;
@@ -16,6 +17,8 @@ class TSFRService extends Thread {
         System.out.println("EchoService: new service working for client from "
                 +  serviceSocket.getInetAddress().getHostAddress()
                 + ":" + serviceSocket.getPort());
+        Connection k = new Connection(serviceSocket.getInetAddress(), serviceSocket.getPort());
+        TSFRServer.connections.add(k);
 
     }
     public void run() {
@@ -27,7 +30,7 @@ class TSFRService extends Thread {
             PrintStream output = new PrintStream(serviceSocket.getOutputStream());
             try {
                 byte[] data = new byte [ 1024 ];
-                DatagramSocket datasocket = new DatagramSocket(4711);
+                DatagramSocket datasocket = new DatagramSocket(4711, serviceSocket.getInetAddress());
                 DatagramPacket datapacket = new DatagramPacket ( data, data.length);
                 datasocket.receive(datapacket);
                 String datatext = null;
@@ -47,6 +50,8 @@ class TSFRService extends Thread {
                     }
                     System.out.println(username + ": " + line);
                     output.println(line);
+                    HashMap test = new HashMap();
+                    test.put(1,2);
                 }
             } finally {
                 output.close();

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.stomp;
+package client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import java.util.Scanner;
  * Created by Catbat on 23.12.2016.
  */
 
-public class TSFRClient {
+public class TSFRClientOld {
     public static void main(String[] args) {
         Socket clientSocket;
         try {
@@ -37,6 +37,7 @@ public class TSFRClient {
             //Authentication
             System.out.println("Username wählen :");
             String username = scanner.nextLine();
+
 
 
             byte[] data = username.getBytes();
