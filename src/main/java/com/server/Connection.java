@@ -1,15 +1,24 @@
-package com.stomp;
+
+package com.server;
 
 
 import java.net.InetAddress;
 
 /**
- * Created by Catbat on 24.02.2017.
+ * Class used to describe connections. Also used by the Connection-database.
+ *
+ *
+ * @see TSFRServer#connections
+ * @since 1
+ * @author Martin Galusinski
+ * @version 1
+ *
  */
 public class Connection {
-    InetAddress ip;
-    int port;
-    String name;
+    private InetAddress ip;
+    private int port;
+    private String name;
+
 
     public Connection (InetAddress ipaddress, int portnumber, String namein){
         this.ip = ipaddress;
