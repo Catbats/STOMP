@@ -43,9 +43,10 @@ public class TSFRServer {
 
 
                     Socket serviceSocket = listen.accept();
-                    TSFRService service = new TSFRService(serviceSocket);
-                    service.start();
-                    servlog.info("Service online.");
+                    Connection temp = new Connection(connections.size(), serviceSocket);
+                    connections.add(temp);
+                    //TODO display existing connection
+                    servlog.info("Current running connections: ");
                 }
 
             } finally {

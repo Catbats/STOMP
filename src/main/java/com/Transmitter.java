@@ -34,11 +34,18 @@ public class Transmitter {
     public Transmitter(String codec, String dest, String src, String msg) {
         this.codec = codec;
         try {
-            this.dest.getByName(dest);
-            this.src.getByName(src);
+            if (dest != "null" && dest != null) {
+                this.dest.getByName(dest);
+            }
+            if (src != "null" && src != null) {
+                this.src.getByName(src);
+            }
+
 
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            Logger log = Logger.getLogger("transmitter");
+            log.warning("UnkownHostException : " + e.getMessage());
         }
 
         this.msg = msg;
@@ -48,20 +55,19 @@ public class Transmitter {
     //Special Methods
 
     public static Transmitter fromString(String input) {
-        Logger log;
         Pattern pattern = Pattern.compile("'(.*?)'");
+
         Matcher matcher = pattern.matcher(input);
-        if (matcher.find()) {
-            Transmitter out = new Transmitter(matcher.group(1),
-                    matcher.group(2),
-                    matcher.group(3),
-                    matcher.group(4));
-            return out;
-        } else {
-            return null;
+        Transmitter out = null;
+        int count = 0;
+        String[] found = new String[4];
+        while (matcher.find()) {
+            found[count] = matcher.group(1);
+            count++;
         }
+        out = new Transmitter(found[0], found[1], found[2], found[3]);
 
-
+        return out;
     }
 
     @Override

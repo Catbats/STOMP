@@ -1,65 +1,112 @@
 package com.server;
 
+import com.Transmitter;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 class TSFRService extends Thread {
     private final Socket serviceSocket;
-    //TODO Handshake receive. JavaDoc.
-    private Logger log = Logger.getLogger("srv.service." + TSFRServer.connections.size());
+    private int id;
+    private BufferedReader input;
+    private PrintStream output;
+    private Logger loghand;
+    private Logger log;
+    //TODO JavaDoc. Remove Connection from Connection-database. Close if client closes.
 
 
     public TSFRService(Socket serviceSocket) {
+
+        log = Logger.getLogger("srv.connection.service." + id);
         log.setLevel(Level.WARNING);
+
 
         this.serviceSocket = serviceSocket;
 
-        log.info("Service: new service working for client from "
+        log.info("Service_" + id + ": new service working for client from "
                 + serviceSocket.getInetAddress().getHostAddress()
                 + ":" + serviceSocket.getPort());
 
-        //Entry in connection Database
-        Connection k = new Connection(serviceSocket.getInetAddress(), serviceSocket.getPort());
-        TSFRServer.connections.add(k);
+
+        //Assigning input and output streams
+        try {
+            input = new BufferedReader(new InputStreamReader(serviceSocket.getInputStream()));
+            output = new PrintStream(serviceSocket.getOutputStream());
+        } catch (IOException e) {
+            log.severe("Service_" + id + ": Failed opening connection \n Error: " + e.getMessage());
+        }
+
 
     }
 
     public void run() {
-        System.out.println("EchoService: waiting for input from the client...");
-        String username = null;
 
+
+        handshake();
+
+
+    }
+
+    private boolean handshake() {
+        log.info("Service: Engaging handshake...");
+        loghand = Logger.getLogger("srv.service." + id + ".handshake");
+
+        boolean ack = false;
         try {
-            BufferedReader input = new BufferedReader(new InputStreamReader(serviceSocket.getInputStream()));
-            PrintStream output = new PrintStream(serviceSocket.getOutputStream());
-            try {
 
 
-                while (true) {
+            //Engage connection using SYN
+            send("SYN");
+
+            //Wait for response
+            while (true) {
+                String rawin = input.readLine();
+                Transmitter in = Transmitter.fromString(rawin);
+                if (rawin != null && in != null) {
+
+                    loghand.info("Received: " + in.toString());
+
+                    //Check response for message
+                    if (in.getMsg() != null) {
 
 
-                    String line = input.readLine();
-                    if (line.equalsIgnoreCase("quit")) {
-                        break;
+                        switch (in.getMsg()) {
+
+                            //Check if client sent "SYN+ACK", if so -> respond with "ACK"
+                            case "SYN+ACK":
+                                send("ACK");
+                                ack = true;
+                                loghand.info("Handshake successful.");
+
+                        }
+
+
                     }
-                    System.out.println(username + ": " + line);
-                    output.println(line);
-                    HashMap test = new HashMap();
-                    test.put(1, 2);
+
+
                 }
-            } finally {
-                output.close();
-                input.close();
+                if (ack == true) {
+                    break;
+                }
             }
-            serviceSocket.close();
-        } catch (IOException ex) {
-            System.err.println("EchoService: ERR " + ex);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        System.out.println("EchoService: stopped");
+        return ack;
+    }
+
+    private void send(String msg) {
+        Transmitter req = new Transmitter();
+        req.setMsg(msg);
+        log.info("Client Sending: " + req);
+        output.println(req.toString());
+
     }
 }

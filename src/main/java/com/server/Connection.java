@@ -2,7 +2,8 @@
 package com.server;
 
 
-import java.net.InetAddress;
+import java.net.Socket;
+import java.util.logging.Logger;
 
 /**
  * Class used to describe connections. Also used by the Connection-database.
@@ -15,42 +16,43 @@ import java.net.InetAddress;
  *
  */
 public class Connection {
-    private InetAddress ip;
-    private int port;
+    private int id;
+    private Socket socket;
     private String name;
+    private TSFRService service;
+    private Logger log = Logger.getLogger("srv.connection");
 
-
-    public Connection (InetAddress ipaddress, int portnumber, String namein){
-        this.ip = ipaddress;
-        this.port = portnumber;
-        this.name = namein;
+    public Connection(int id, Socket socket) {
+        this.id = id;
+        this.socket = socket;
+        service = new TSFRService(this.socket);
+        startService();
     }
 
-    public Connection (InetAddress ipaddress, int portnumber){
-        this.ip = ipaddress;
-        this.port = portnumber;
-        this.name = null;
+    //gets & sets
+
+    public int getId() {
+        return id;
     }
 
-
-    public Connection (){
-
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public InetAddress getIp() {
-        return ip;
+    public Socket getSocket() {
+        return socket;
     }
 
-    public void setIp(InetAddress ip) {
-        this.ip = ip;
+    public void setSocket(Socket socket) {
+        this.socket = socket;
     }
 
-    public int getPort() {
-        return port;
+    public Logger getLog() {
+        return log;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setLog(Logger log) {
+        this.log = log;
     }
 
     public String getName() {
@@ -59,5 +61,35 @@ public class Connection {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public TSFRService getService() {
+        return service;
+    }
+
+    public void setService(TSFRService service) {
+        this.service = service;
+    }
+
+
+    //special service methods
+
+    public void startService() {
+        if (this.service.isAlive() == false) {
+            this.service.start();
+        } else {
+            log.warning("service already running.");
+        }
+
+    }
+
+    public void stopService() {
+        if (this.service.isAlive() == true) {
+            this.service.interrupt();
+            log.info("Service stop invoked.");
+        } else {
+            log.warning("service already running.");
+        }
+
     }
 }
