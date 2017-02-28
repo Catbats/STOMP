@@ -74,6 +74,17 @@ public class Connection {
 
     //special service methods
 
+
+    @Override
+    public String toString() {
+        return "Connection{" +
+                "id=" + id +
+                ", socket=" + socket +
+                ", name='" + name + '\'' +
+                ", service=" + service +
+                '}';
+    }
+
     public void startService() {
         if (this.service.isAlive() == false) {
             this.service.start();
