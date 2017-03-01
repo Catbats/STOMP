@@ -1,4 +1,4 @@
-package com.stomp;
+package com.server;
 
 /**
  * Created by Catbat on 18.11.2016.

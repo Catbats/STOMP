@@ -1,4 +1,4 @@
-package com.stomp;
+package com.server;
 
 
 import org.springframework.context.annotation.Configuration;
