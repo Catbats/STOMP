@@ -1,5 +1,7 @@
 package com.server;
 
+import com.Command;
+
 /**
  * Created by marti on 28.02.2017.
  */

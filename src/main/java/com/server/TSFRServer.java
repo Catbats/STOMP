@@ -26,14 +26,17 @@ public class TSFRServer {
      */
     public static ArrayList<Connection> connections = new ArrayList();
     static Logger servlog = Logger.getLogger("srv");
+    static Console console;
 
     public static void main(String[] args) {
 
         servlog.setLevel(Level.ALL);
         ServerSocket listen;
-
+        console = new Console();
+            console.start();
         try {
             listen = new ServerSocket(4000);
+
             try {
                 while (true) {
 

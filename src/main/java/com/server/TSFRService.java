@@ -23,7 +23,7 @@ class TSFRService extends Thread {
     public TSFRService(Socket serviceSocket) {
 
         log = Logger.getLogger("srv.connection.service." + id);
-        log.setLevel(Level.WARNING);
+        log.setLevel(Level.ALL);
 
 
         this.serviceSocket = serviceSocket;
@@ -49,6 +49,11 @@ class TSFRService extends Thread {
 
         handshake();
 
+        try {
+            this.serviceSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -72,27 +77,30 @@ class TSFRService extends Thread {
                     loghand.info("Received: " + in.toString());
 
                     //Check response for message
-                    if (in.getMsg() != null) {
+                    if (in.getMsg() != null && ack ==false ) {
 
 
-                        switch (in.getMsg()) {
-
-                            //Check if client sent "SYN+ACK", if so -> respond with "ACK"
-                            case "SYN+ACK":
-                                send("ACK");
-                                ack = true;
-                                loghand.info("Handshake successful.");
+                        if( in.getMsg().equalsIgnoreCase("SYN+ACK" )){
+                            send("ACK");
+                            ack = true;
+                            loghand.info("Handshake successful.");
 
                         }
 
+                            //Check if client sent "SYN+ACK", if so -> respond with "ACK"
 
+
+
+
+
+
+                    } else {
+                        break;
                     }
 
 
                 }
-                if (ack == true) {
-                    break;
-                }
+
             }
 
 
@@ -105,8 +113,12 @@ class TSFRService extends Thread {
     private void send(String msg) {
         Transmitter req = new Transmitter();
         req.setMsg(msg);
-        log.info("Client Sending: " + req);
+        log.info("Service_" + id + " sending: " + req);
         output.println(req.toString());
 
+    }
+
+    public void ping(){
+        send("ping");
     }
 }

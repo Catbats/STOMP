@@ -11,33 +11,63 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * Created by Catbat on 23.12.2016.
  */
-//TODO JavaDoc. Close if Connection closes.
+//TODO declare server ip. JavaDoc.
 public class TSFRClient {
     static Socket clientSocket;
     static BufferedReader input;
     static PrintStream output;
     static Logger log;
     static Logger logOut;
+    public static InetAddress server;
+    private static Console con;
+
 
     public static void main(String[] args) throws IOException {
-        log = Logger.getLogger("client");
-        logOut = Logger.getLogger("client.output");
 
-        Handshake();
+
+        initialize();
+        handshake();
+
+
+
+
+/** raw input coming in from the server */
+
+        boolean done = false;
 
         while (true) {
+            String rawin = input.readLine();
+            Transmitter in = Transmitter.fromString(rawin);
+            if (rawin != null && in != null) {
+                log.info("Received: " + in.toString());
+                //Check response for message
+                switch (in.getMsg().toLowerCase()){
+                    case "ping": String out = executeCommand("ping " + clientSocket.getInetAddress() + " -c3");
+                        System.out.println(out);
+                        done = true;
 
+                }
+
+
+            }
+            if(done == true){
+                break;
+            }
         }
+
     }
 
-    private static boolean Handshake() throws IOException {
+    private static boolean handshake() throws IOException {
 
 
         Logger loghand = Logger.getLogger("client.handshake");
@@ -49,7 +79,7 @@ public class TSFRClient {
         try {
 
 
-            clientSocket = new Socket("localhost", 4000);
+            clientSocket = new Socket(server, 4000);
             input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             output = new PrintStream(clientSocket.getOutputStream());
 
@@ -58,17 +88,17 @@ public class TSFRClient {
             loghand.info("Waiting for Service...");
             while (true) {
                 /** raw input coming in from the server */
+
                 String rawin = input.readLine();
                 Transmitter in = Transmitter.fromString(rawin);
                 if (rawin != null && in != null) {
 
 
-                    loghand.info("Received: " + in.toString());
 
 
                     //Check response for message
                     if (in.getMsg() != null) {
-
+                        loghand.info("Received: " + in.toString());
 
                         switch (in.getMsg().toUpperCase()) {
                             case "SYN":
@@ -77,6 +107,7 @@ public class TSFRClient {
                             case "ACK":
                                 loghand.info("Handshake successful.");
                                 ack = true;
+
 
                                 // TODO Authentication after handshake and proper documentation
                         }
@@ -98,11 +129,46 @@ public class TSFRClient {
 
     }
 
+    private static void ping(InetAddress ip){
+        String cmd = "ping " + ip.toString() + " -c3";
+        executeCommand(cmd);
+    }
+
+    private static String executeCommand(String command) {
+
+        StringBuffer output = new StringBuffer();
+
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec(command);
+            p.waitFor();
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            String line = "";
+            while ((line = reader.readLine())!= null) {
+                output.append(line + "\n");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return output.toString();
+
+    }
     private static void send(String msg) {
         Transmitter req = new Transmitter();
         req.setMsg(msg);
         log.info("Client Sending: " + req);
         output.println(req.toString());
+
+    }
+    private static void initialize(){
+        log = Logger.getLogger("client");
+        logOut = Logger.getLogger("client.output");
+        con = new Console();
+        con.start();
 
     }
 }
