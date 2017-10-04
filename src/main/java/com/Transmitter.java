@@ -16,8 +16,6 @@ public class Transmitter {
     private InetAddress src;
     private String msg;
 
-    //TODO JavaDoc
-
     //Constructors
 
     public Transmitter() {

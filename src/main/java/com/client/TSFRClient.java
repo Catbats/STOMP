@@ -23,6 +23,7 @@ import java.util.logging.Logger;
  */
 //TODO declare server ip. JavaDoc.
 public class TSFRClient {
+    //Declarations
     static Socket clientSocket;
     static BufferedReader input;
     static PrintStream output;
@@ -30,23 +31,29 @@ public class TSFRClient {
     static Logger logOut;
     public static InetAddress server;
     private static Console con;
-
+    public static boolean quit;
 
     public static void main(String[] args) throws IOException {
 
-
+        quit = false;
         initialize();
-        handshake();
 
 
+        listen();
 
 
+    }
+    //TODO threadify Listen()
+    private static void listen(){
 /** raw input coming in from the server */
-
-        boolean done = false;
-
         while (true) {
-            String rawin = input.readLine();
+
+            String rawin = null;
+            try {
+                rawin = input.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             Transmitter in = Transmitter.fromString(rawin);
             if (rawin != null && in != null) {
                 log.info("Received: " + in.toString());
@@ -54,20 +61,16 @@ public class TSFRClient {
                 switch (in.getMsg().toLowerCase()){
                     case "ping": String out = executeCommand("ping " + clientSocket.getInetAddress() + " -c3");
                         System.out.println(out);
-                        done = true;
+
 
                 }
 
 
             }
-            if(done == true){
-                break;
-            }
+
         }
-
     }
-
-    private static boolean handshake() throws IOException {
+    public static boolean handshake() throws IOException {
 
 
         Logger loghand = Logger.getLogger("client.handshake");
@@ -128,12 +131,10 @@ public class TSFRClient {
         return ack;
 
     }
-
     private static void ping(InetAddress ip){
         String cmd = "ping " + ip.toString() + " -c3";
         executeCommand(cmd);
     }
-
     private static String executeCommand(String command) {
 
         StringBuffer output = new StringBuffer();

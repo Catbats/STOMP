@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * @see com.server.TSFRService
  * @since 1
  */
-public class TSFRServer {
+public class TSFRServer extends Thread{
 
     /**
      * Connection-database used to manage only established and running connections.
@@ -27,8 +27,13 @@ public class TSFRServer {
     public static ArrayList<Connection> connections = new ArrayList();
     static Logger servlog = Logger.getLogger("srv");
     static Console console;
+    public TSFRServer(){
 
-    public static void main(String[] args) {
+    }
+
+
+
+    public void run() {
 
         servlog.setLevel(Level.ALL);
         ServerSocket listen;
